@@ -3,6 +3,7 @@
 .brand { display: inline-flex; align-items: center; min-height: 48px; text-decoration: none; }
 .brand img { display: block; width: 120px; height: 40px; }
 .app-title { color: var(--navy); font-size: 16px; font-weight: 600; margin-right: auto; }
+.simulation-link { display: inline-flex; align-items: center; min-height: 44px; color: var(--navy); font-size: 12px; font-weight: 600; text-underline-offset: 3px; }
 .language-switch { display: flex; gap: 2px; flex-shrink: 0; }
 .language-switch button { min-width: 44px; min-height: 44px; padding: 8px; border: 1px solid transparent; border-radius: 6px; color: var(--navy); background: transparent; font-size: 14px; font-weight: 600; }
 .language-switch button[aria-pressed='true'] { background: var(--surface); border-color: var(--border); }

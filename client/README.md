@@ -50,6 +50,21 @@ Vedi [docs/frontend.md](../docs/frontend.md) per il contratto JSON provvisorio e
 
 Il frontend non calcola il routing né inventa dimensioni del camion, tempi o distanze. Le metriche reali e il profilo veicolo sono quelli della risposta API. Dati mancanti appaiono come non disponibili; avvisi del backend sono visibili anche fuori dalla mappa.
 
+## Presentation simulator
+
+Open **[http://localhost:5173/cool-simulation](http://localhost:5173/cool-simulation)** after `bun run dev`, or use the **Ajosimulaattori / Driving simulator** link in the planner. The simulator is independent of the backend and works without API keys or external assets.
+
+A simple Three.js first-person delivery-lorry demo inspired by **Jokikatu in Old Porvoo, Finland**. Compare a **4.8 m, dimly lit cobbled street** with a **9 m, regularly lit asphalt alternative**, using the same bends, 2.55 × 8 m rigid lorry, and 30 km/h speed cap. Both have parked vehicles; the wider version moves them into bays. Headlights, working rear-view mirrors, steering-wheel movement and whole-body kerb/car collisions make the difference visible. Reach the checkered gate to compare the latest completed runs by time and contacts.
+
+- **W** accelerate; **S** brake, then reverse; **A / D** steer.
+- **Mouse** look around (click **Start driving** to capture it). If capture is blocked, drag the view instead.
+- **Space** brake; **Esc** pause/release the mouse; **R** restart. Tab also pauses so keyboard users can leave the canvas. Switching road conditions resets the current attempt, not completed comparisons.
+- Requires **WebGL2, a keyboard and mouse** on a desktop/laptop. Losing focus or hiding the tab pauses the run. FI / EN uses the same persisted preference as the planner, including instructions, warnings, errors and numbers.
+
+**Illustration, not a digital twin:** [Visit Porvoo](https://www.visitporvoo.fi/en/sights/old-porvoo/) is the location reference; its [accessibility guide](https://www.visitporvoo.fi/en/accessibility/) documents the old town's uneven cobblestone streets. The scene, road widths, darkness, parked vehicles and improved road are fictional presentation choices, not measured conditions, a claim about Jokikatu's current lighting, a proposed improvement, or confirmation of lorry access. This is not driver training or route planning.
+
+Implementation: `src/features/simulation/driving.ts` contains deterministic fixed-step physics and collision geometry; `scene.ts` creates procedural, batched Three.js artwork and owns input/rendering/resource cleanup; `Simulation.tsx` and `messages.ts` own the minimal bilingual page. The page and renderer are lazy-loaded for `/cool-simulation`; the route planner and backend contracts remain separate. Vitest covers vehicle behavior and UI state; Playwright exercises the real renderer, keyboard/mouse controls, language persistence, layout and WebGL/capture failures.
+
 ## Verifiche
 
 ```sh

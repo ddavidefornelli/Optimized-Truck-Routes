@@ -47,6 +47,7 @@ export default function App(props: { service?: RouteService; addressSearch?: Add
       <header class="app-header">
         <a class="brand" href="/" aria-label={t('Valio Aimo, pagina iniziale')}><img src="/valio-aimo.svg" alt="Valio Aimo" width="120" height="40" /></a>
         <h1 class="app-title">{t('Percorsi autisti')}</h1>
+        <a class="simulation-link" href="/cool-simulation">{language() === 'fi' ? 'Ajosimulaattori' : 'Driving simulator'}</a>
         <div class="language-switch" role="group" aria-label={language() === 'fi' ? 'Kieli' : 'Language'}>
           <button type="button" lang="fi" aria-label="Suomi" aria-pressed={language() === 'fi'} onClick={() => setLanguage('fi')}>FI</button>
           <button type="button" lang="en" aria-label="English" aria-pressed={language() === 'en'} onClick={() => setLanguage('en')}>EN</button>
