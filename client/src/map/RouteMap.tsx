@@ -7,6 +7,10 @@ import type { Coordinates, RouteOption } from '../features/route-planner/domain'
 import type { StopKey } from '../features/route-planner/createRoutePlanner'
 import { offlineStyle } from './offlineStyle'
 
+const DEFAULT_MAP_STYLE_URL = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json'
+const configuredStyle = import.meta.env.VITE_MAP_STYLE_URL?.trim()
+const mapStyleUrl = configuredStyle || DEFAULT_MAP_STYLE_URL
+
 interface Props {
   points: { origin: Coordinates | null; destination: Coordinates | null }
   routes: RouteOption[]
@@ -24,7 +28,7 @@ export default function RouteMap(props: Props) {
   let markers: Marker[] = []
   const [ready, setReady] = createSignal(false)
   const [unavailable, setUnavailable] = createSignal(false)
-  const [offline, setOffline] = createSignal(!import.meta.env.VITE_MAP_STYLE_URL)
+  const [offline, setOffline] = createSignal(false)
   const [notice, setNotice] = createSignal('')
 
   onMount(async () => {
@@ -34,9 +38,12 @@ export default function RouteMap(props: Props) {
       // Vite relocates the ESM bundle: the v6 worker URL must be explicit.
       lib.setWorkerUrl(workerUrl)
       map = new lib.Map({
-        container, style: import.meta.env.VITE_MAP_STYLE_URL || offlineStyle(),
+        container, style: mapStyleUrl,
         center: [25.25, 60.3], zoom: 8.6, minZoom: 2, maxZoom: 18,
-        attributionControl: { compact: true },
+        attributionControl: {
+          compact: true,
+          customAttribution: configuredStyle ? undefined : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        },
         renderWorldCopies: false,
       })
       map.addControl(new lib.NavigationControl({ showCompass: false }), 'top-right')
@@ -139,7 +146,7 @@ export default function RouteMap(props: Props) {
       <Show when={props.loading}><div class="map-loading" role="status"><span class="spinner" />Calcolo del percorso in corso…</div></Show>
       <Show when={unavailable()}><div class="map-empty map-unavailable" role="status"><Icon name="info" size={30} /><h2>Mappa non disponibile</h2><p>Il browser non supporta la mappa o non è stato possibile caricarla. Puoi comunque inserire le coordinate e leggere il risultato.</p></div></Show>
       <Show when={notice()}><p class="map-notice" role="status">{notice()}</p></Show>
-      <div class="map-footer"><span class="map-basemap-label"><span class="small-dot" />{offline() ? 'Griglia geografica · senza strade' : 'Mappa di base configurata'}</span><Show when={props.selected}><span class="map-legend"><span class="legend-line" />{props.demo ? 'Percorso sintetico' : 'Percorso selezionato'}</span></Show></div>
+      <div class="map-footer"><span class="map-basemap-label"><span class="small-dot" />{offline() ? 'Griglia geografica · senza strade' : (configuredStyle ? 'Mappa di base configurata' : 'CARTO Positron · OpenStreetMap')}</span><Show when={props.selected}><span class="map-legend"><span class="legend-line" />{props.demo ? 'Percorso sintetico' : 'Percorso selezionato'}</span></Show></div>
     </section>
   )
 }

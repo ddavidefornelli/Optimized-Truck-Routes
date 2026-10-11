@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import { offlineStyle } from '../src/map/offlineStyle'
 
 const response = {
   status: 'ok', mode: 'real', request_id: 'e2e-route', warnings: [],
@@ -7,7 +8,8 @@ const response = {
 }
 
 test.beforeEach(async ({ page }) => {
-  // All tests are offline and deterministic, including the default geographic grid.
+  // Intercept the default style so tests never depend on external tile services.
+  await page.route('https://basemaps.cartocdn.com/gl/positron-gl-style/style.json', (route) => route.fulfill({ json: offlineStyle() }))
   await page.route('**/api/v1/routes', (route) => route.fulfill({ json: response }))
 })
 
@@ -30,6 +32,7 @@ test('plans a route through the API and displays it on the map', async ({ page }
   await expect(page.getByText('Percorso selezionato', { exact: true })).toBeVisible()
   await expect(page.locator('.map-pin')).toHaveCount(2)
   await expect(page.locator('.map-canvas')).toHaveAttribute('data-ready', 'true')
+  await expect(page.getByText('CARTO Positron · OpenStreetMap', { exact: true })).toBeVisible()
   await expect(page.getByText('Mappa non disponibile', { exact: true })).toHaveCount(0)
   expect(errors).toEqual([])
   expect(requestBody).toMatchObject({ origin: { longitude: 24.9384, latitude: 60.1699 }, destination: { longitude: 25.6639, latitude: 60.3929 }, profiles: ['balanced'] })
@@ -64,6 +67,17 @@ test('communicates errors without replacing them with a simulated route', async 
   await page.getByRole('button', { name: 'Calcola percorso' }).click()
   await expect(page.getByRole('alert')).toContainText('Il motore di routing non è ancora pronto')
   await expect(page.getByText('58,4 km')).toHaveCount(0)
+})
+
+test('keeps route overlays usable when the basemap fails', async ({ page }) => {
+  await page.route('https://basemaps.cartocdn.com/gl/positron-gl-style/style.json', (route) => route.fulfill({ status: 503, body: 'Unavailable' }))
+  await page.goto('/')
+  await expect(page.getByText('Le strade non sono disponibili.', { exact: false })).toBeVisible()
+  await expect(page.getByText('Griglia geografica · senza strade', { exact: true })).toBeVisible()
+  await page.getByRole('button', { name: 'Prova un esempio' }).click()
+  await expect(page.locator('.map-canvas')).toHaveAttribute('data-ready', 'true')
+  await expect(page.locator('.map-pin')).toHaveCount(2)
+  await expect(page.getByText('58,4 km')).toBeVisible()
 })
 
 test('remains usable on a narrow mobile screen', async ({ page }) => {

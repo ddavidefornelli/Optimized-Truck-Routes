@@ -23,9 +23,9 @@ Vedi [`.env.example`](./.env.example).
 | `API_PROXY_TARGET` | `http://127.0.0.1:8000` | Proxy `/api` del server di sviluppo, non della build di produzione. |
 | `VITE_API_BASE_URL` | stessa origine | URL pubblico del backend. Se cross-origin, configurare CORS nel backend. |
 | `VITE_ROUTES_ENDPOINT` | `/api/v1/routes` | Endpoint POST di routing. |
-| `VITE_MAP_STYLE_URL` | vuoto | Style JSON MapLibre del provider scelto. |
+| `VITE_MAP_STYLE_URL` | CARTO Positron | Override dello style JSON MapLibre; vuoto usa la mappa stradale chiara CARTO. |
 
-Senza style configurato, la mappa mostra una **griglia geografica offline**, i punti e i percorsi, non strade inventate. Non fa richieste a provider terzi. Per una basemap reale configurare provider, termini d'uso, attribuzioni e credenziali pubbliche appropriate. MapLibre mostra le attribuzioni del provider se definite nelle sorgenti dello style. Con WebGL non disponibile, coordinate e riepilogo rimangono utilizzabili.
+La mappa predefinita è **CARTO Positron**, una basemap stradale chiara con dati OpenStreetMap, renderizzata da MapLibre. Style, tile, sprite e font vengono richiesti al CDN pubblico CARTO; le attribuzioni OpenStreetMap e CARTO rimangono visibili nel controllo della mappa. Verificare i [termini del provider](https://carto.com/legal/) per l'uso in produzione. `VITE_MAP_STYLE_URL` consente di scegliere un altro provider. Se la basemap non è raggiungibile, un avviso esplicito segnala il passaggio alla **griglia geografica offline**, mantenendo punti e percorsi senza inventare strade. Con WebGL non disponibile, coordinate e riepilogo rimangono utilizzabili.
 
 I valori `VITE_*` sono pubblici e inclusi nella build: **non inserirvi segreti**. In produzione configurare un reverse proxy `/api` oppure `VITE_API_BASE_URL`; i valori vengono letti al build, quindi ricostruire il client quando cambiano.
 
@@ -38,7 +38,7 @@ Vedi [docs/frontend.md](../docs/frontend.md) per il contratto JSON provvisorio e
 - `src/lib/api/http.ts`: trasporto JSON, timeout e messaggi di errore.
 - `src/lib/api/routes-v1.ts`: unico adapter tra dominio e JSON, con validazione runtime.
 - `src/features/route-planner/demo.ts`: fixture sintetica opt-in, separata dall'API.
-- `src/map/`: rendering GeoJSON, punti selezionabili e sfondo offline.
+- `src/map/`: rendering GeoJSON, punti selezionabili, basemap CARTO Positron e fallback offline.
 
 Il frontend non calcola il routing né inventa dimensioni del camion, tempi o distanze. Le metriche reali e il profilo veicolo sono quelli della risposta API. Dati mancanti appaiono come non disponibili; avvisi del backend sono visibili anche fuori dalla mappa.
 
