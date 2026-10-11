@@ -1,0 +1,22 @@
+# Dependencies and build outputs
+node_modules/
+dist/
+coverage/
+playwright-report/
+test-results/
+
+# Python and local data
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+*.py[cod]
+data/
+
+# Local credentials
+.env
+.env.*
+!.env.example
+
+# Editor / OS
+.DS_Store
