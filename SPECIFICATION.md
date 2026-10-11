@@ -2,7 +2,7 @@
 
 **Versione:** 0.1 — proposta da approvare  
 **Data:** 11 ottobre 2026  
-**Stato:** progettazione; nessuna implementazione ancora realizzata.
+**Stato:** progettazione del backend; base frontend implementata (vedi [docs/frontend.md](./docs/frontend.md)), non ancora MVP completo.
 
 ## 1. Obiettivo
 
@@ -58,6 +58,7 @@ L'MVP completo è il risultato delle milestone M1–M3: il primo prototipo sarà
 
 ### 3.2 Evoluzioni
 
+- Più consegne in un singolo viaggio: frontend predisposto con tappe ordinate; contratto API multi-stop e ottimizzazione dell'ordine da definire separatamente, fuori dall'MVP iniziale.
 - Supporto a camion di dimensioni, masse e configurazioni degli assi diverse, con selezione/configurazione e validazione dei profili veicolo.
 - Estensione nazionale dopo verifica di prestazioni e qualità.
 - Ricerca indirizzi tramite un geocoder scelto e configurato esplicitamente.
