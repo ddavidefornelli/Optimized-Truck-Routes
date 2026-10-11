@@ -1,4 +1,5 @@
 import { createMemo, createSignal, onCleanup } from 'solid-js'
+import type { AddressSuggestion } from './address'
 import type { Coordinates, RouteResult, RouteService } from './domain'
 import { createPlan, formatCoordinates, parseCoordinates, sameCoordinates } from './domain'
 import { createDemoRouteService, demoPlan } from './demo'
@@ -9,6 +10,7 @@ export type StopKey = 'origin' | 'destination'
 export function createRoutePlanner(api: RouteService, demo: RouteService = createDemoRouteService()) {
   const [origin, setOrigin] = createSignal('')
   const [destination, setDestination] = createSignal('')
+  const [addresses, setAddresses] = createSignal<Partial<Record<StopKey, AddressSuggestion>>>({})
   const [mode, setMode] = createSignal<'api' | 'demo'>('api')
   const [picking, setPicking] = createSignal<StopKey | null>(null)
   const [errors, setErrors] = createSignal<Partial<Record<StopKey, string>>>({})
@@ -17,7 +19,10 @@ export function createRoutePlanner(api: RouteService, demo: RouteService = creat
   const [result, setResult] = createSignal<RouteResult>()
   const [selectedId, setSelectedId] = createSignal('')
   const selectedRoute = createMemo(() => result()?.routes.find((route) => route.id === selectedId()))
-  const points = createMemo(() => ({ origin: parseCoordinates(origin()), destination: parseCoordinates(destination()) }))
+  const points = createMemo(() => ({
+    origin: addresses().origin?.coordinates ?? parseCoordinates(origin()),
+    destination: addresses().destination?.coordinates ?? parseCoordinates(destination()),
+  }))
   let controller: AbortController | undefined
   let generation = 0
 
@@ -35,8 +40,15 @@ export function createRoutePlanner(api: RouteService, demo: RouteService = creat
   function update(key: StopKey, value: string) {
     invalidate()
     setMode('api')
+    setAddresses((current) => ({ ...current, [key]: undefined }))
     if (key === 'origin') setOrigin(value)
     else setDestination(value)
+  }
+
+  function selectAddress(key: StopKey, suggestion: AddressSuggestion) {
+    update(key, suggestion.label)
+    setAddresses((current) => ({ ...current, [key]: suggestion }))
+    setPicking(null)
   }
 
   function pick(point: Coordinates) {
@@ -51,8 +63,8 @@ export function createRoutePlanner(api: RouteService, demo: RouteService = creat
     setPicking(null)
     const { origin: start, destination: end } = points()
     const validation: Partial<Record<StopKey, string>> = {}
-    if (!start) validation.origin = 'Inserisci latitudine, longitudine valide.'
-    if (!end) validation.destination = 'Inserisci latitudine, longitudine valide.'
+    if (!start) validation.origin = origin().trim() && !parseCoordinates(origin()) ? 'Seleziona un indirizzo dai suggerimenti o scegli sulla mappa.' : 'Inserisci latitudine, longitudine valide.'
+    if (!end) validation.destination = destination().trim() && !parseCoordinates(destination()) ? 'Seleziona un indirizzo dai suggerimenti o scegli sulla mappa.' : 'Inserisci latitudine, longitudine valide.'
     if (start && end && sameCoordinates(start, end)) validation.destination = 'L’arrivo deve essere diverso dalla partenza.'
     setErrors(validation)
     if (!start || !end || Object.keys(validation).length) return
@@ -79,6 +91,7 @@ export function createRoutePlanner(api: RouteService, demo: RouteService = creat
 
   function showDemo() {
     invalidate()
+    setAddresses({})
     setOrigin(formatCoordinates(demoPlan.stops[0].coordinates))
     setDestination(formatCoordinates(demoPlan.stops[1].coordinates))
     setMode('demo')
@@ -92,7 +105,9 @@ export function createRoutePlanner(api: RouteService, demo: RouteService = creat
 
   function swap() {
     const start = origin()
+    const currentAddresses = addresses()
     invalidate()
+    setAddresses({ origin: currentAddresses.destination, destination: currentAddresses.origin })
     setMode('api')
     setOrigin(destination())
     setDestination(start)
@@ -103,7 +118,7 @@ export function createRoutePlanner(api: RouteService, demo: RouteService = creat
 
   return {
     origin, destination, mode, picking, errors, error, loading, result, selectedRoute, points,
-    update, pick, calculate, showDemo, exitDemo, swap, cancel: invalidate,
+    addresses, selectAddress, update, pick, calculate, showDemo, exitDemo, swap, cancel: invalidate,
     selectRoute: setSelectedId,
     togglePicking: (key: StopKey) => setPicking((current) => current === key ? null : key),
   }

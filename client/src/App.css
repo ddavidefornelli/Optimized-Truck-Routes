@@ -23,6 +23,12 @@ main { padding: 0 12px; }
 .stop-connector { display: flex; align-items: center; justify-content: space-between; height: 44px; padding-left: 4px; }
 .stop-connector > span { height: 24px; border-left: 1px dashed #bccbd4; }
 .coordinate-hint { font-size: 12px; margin-top: 8px; color: var(--muted); }
+.address-results { margin-top: 6px; border: 1px solid var(--border); border-radius: 8px; background: white; overflow: hidden; }
+.address-results ul { margin: 0; padding: 0; list-style: none; }
+.address-results li { min-height: 44px; padding: 12px; font-size: 14px; line-height: 1.5; overflow-wrap: anywhere; cursor: pointer; border-bottom: 1px solid var(--border); }
+.address-results li:hover, .address-results li.active { background: #eaf1f6; }
+.address-results p { padding: 12px; font-size: 13px; color: var(--muted); }
+.address-results a { display: block; padding: 12px; min-height: 44px; font-size: 12px; color: var(--muted); }
 .field-error { color: #9b403b; font-size: 13px; line-height: 1.5; margin-top: 7px; }
 .primary-button { border: 0; width: 100%; min-height: 48px; margin-top: 16px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; color: white; background: var(--navy); border-radius: 8px; font-size: 15px; font-weight: 600; }
 .primary-button:hover:not(:disabled) { background: var(--navy-hover); }

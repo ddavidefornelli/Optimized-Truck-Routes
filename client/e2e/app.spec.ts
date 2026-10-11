@@ -11,6 +11,7 @@ test.beforeEach(async ({ page }) => {
   // Intercept the default style so tests never depend on external tile services.
   await page.route('https://basemaps.cartocdn.com/gl/positron-gl-style/style.json', (route) => route.fulfill({ json: offlineStyle() }))
   await page.route('**/api/v1/routes', (route) => route.fulfill({ json: response }))
+  await page.route('https://api.geoapify.com/**', (route) => route.fulfill({ json: { features: [] } }))
 })
 
 test('plans a route through the API and displays it on the map', async ({ page }) => {
@@ -98,4 +99,40 @@ test('remains usable on a narrow mobile screen', async ({ page }) => {
   await expect(page.locator('.maplibregl-canvas')).toBeInViewport()
   await page.locator('.maplibregl-canvas').click({ position: { x: 150, y: 180 } })
   await expect(page.getByRole('button', { name: 'Scegli partenza sulla mappa' })).toHaveAttribute('aria-pressed', 'false')
+})
+
+test('selects addresses on mobile and sends only their coordinates to the backend', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+  await page.route('https://api.geoapify.com/**', (route) => {
+    const text = new URL(route.request().url()).searchParams.get('text')
+    const properties = text?.startsWith('Manner')
+      ? { place_id: 'start', formatted: 'Mannerheimintie 1, Helsinki', lat: 60.1699, lon: 24.9384 }
+      : { place_id: 'end', formatted: 'Aleksanterinkatu 1, Porvoo', lat: 60.3929, lon: 25.6639 }
+    return route.fulfill({ json: { features: [{ properties }] } })
+  })
+  let requestBody: unknown
+  await page.route('**/api/v1/routes', (route) => {
+    requestBody = route.request().postDataJSON()
+    return route.fulfill({ json: response })
+  })
+  await page.goto('/')
+  await page.getByLabel('Punto di partenza', { exact: true }).fill('Mannerheim')
+  const start = page.getByRole('option', { name: 'Mannerheimintie 1, Helsinki' })
+  await expect(start).toBeVisible()
+  expect((await start.boundingBox())!.height).toBeGreaterThanOrEqual(44)
+  await expect(page.getByRole('link', { name: 'Powered by Geoapify' }).first()).toBeVisible()
+  await start.click()
+  await page.getByLabel('Punto di arrivo', { exact: true }).fill('Aleksanteri')
+  await page.getByRole('option', { name: 'Aleksanterinkatu 1, Porvoo' }).click()
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+  await page.getByRole('button', { name: 'Calcola percorso' }).click()
+  await expect(page.getByText('58,4 km')).toBeVisible()
+  expect(requestBody).toMatchObject({ origin: { longitude: 24.9384, latitude: 60.1699 }, destination: { longitude: 25.6639, latitude: 60.3929 }, profiles: ['balanced'] })
+  expect(requestBody).not.toHaveProperty('apiKey')
+  expect(requestBody).not.toHaveProperty('address')
+  await expect(page.locator('.map-pin')).toHaveCount(2)
+  await page.getByLabel('Punto di arrivo', { exact: true }).fill('Unselected address')
+  await page.getByRole('button', { name: 'Calcola percorso' }).click()
+  await expect(page.getByText('Seleziona un indirizzo dai suggerimenti o scegli sulla mappa.')).toBeVisible()
+  await expect(page.getByText('58,4 km')).toHaveCount(0)
 })
