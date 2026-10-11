@@ -20,7 +20,9 @@ function apiResult(): RouteResult {
 it('renders a minimal planner and validates before calling the backend', async () => {
   const calculate = vi.fn<RouteService['calculate']>()
   render(() => <App service={{ calculate }} />)
-  expect(screen.getByRole('heading', { name: 'Una rotta. Meno incertezze.' })).toBeInTheDocument()
+  expect(screen.queryByRole('heading')).not.toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Calcola percorso' })).toBeInTheDocument()
+  expect(screen.queryByText('Camion standard')).not.toBeInTheDocument()
   fireEvent.click(screen.getByRole('button', { name: 'Calcola percorso' }))
   expect(screen.getAllByText('Inserisci latitudine, longitudine valide.')).toHaveLength(2)
   expect(calculate).not.toHaveBeenCalled()

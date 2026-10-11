@@ -51,7 +51,7 @@ export default function RouteMap(props: Props) {
       map.on('error', () => {
         if (!offline()) {
           setOffline(true)
-          setNotice('Le strade non sono disponibili. Visualizziamo il percorso sulla griglia geografica.')
+          setNotice('Le strade non sono disponibili. Percorso su griglia geografica.')
           setReady(false)
           map?.setStyle(offlineStyle())
         }
@@ -136,17 +136,13 @@ export default function RouteMap(props: Props) {
   })
 
   return (
-    <section class="map-panel" aria-label="Mappa del percorso">
+    <section id="route-map" class="map-panel" aria-label="Mappa del percorso">
       <div ref={container} class="map-canvas" data-ready={ready()} />
-      <div class="map-heading"><span class="map-heading-icon"><Icon name="route" size={17} /></span><div><strong>Vista del percorso</strong><span>{props.demo ? 'Dati dimostrativi' : 'Finlandia · WGS84'}</span></div></div>
-      <Show when={!props.selected && !props.picking && !props.loading && !unavailable()}>
-        <div class="map-empty"><div class="map-empty-icon"><Icon name="pin" size={29} /></div><h2>Da dove partiamo?</h2><p>Inserisci partenza e arrivo.<br />Il tuo percorso prenderà forma qui.</p><div class="map-empty-rule" /><span>Un punto di partenza. Una nuova direzione.</span></div>
-      </Show>
-      <Show when={props.picking && !unavailable()}><div class="map-pick-notice" role="status"><Icon name="pin" size={18} />Clicca sulla mappa per scegliere {props.picking === 'origin' ? 'la partenza' : 'l’arrivo'}.</div></Show>
-      <Show when={props.loading}><div class="map-loading" role="status"><span class="spinner" />Calcolo del percorso in corso…</div></Show>
-      <Show when={unavailable()}><div class="map-empty map-unavailable" role="status"><Icon name="info" size={30} /><h2>Mappa non disponibile</h2><p>Il browser non supporta la mappa o non è stato possibile caricarla. Puoi comunque inserire le coordinate e leggere il risultato.</p></div></Show>
+      <Show when={props.picking && !unavailable()}><div class="map-pick-notice" role="status"><Icon name="pin" size={18} />Tocca la mappa per scegliere {props.picking === 'origin' ? 'la partenza' : 'l’arrivo'}.</div></Show>
+      <Show when={props.loading}><div class="map-loading" role="status"><span class="spinner" />Calcolo in corso…</div></Show>
+      <Show when={unavailable()}><div class="map-unavailable" role="status"><Icon name="info" size={20} /><p>Mappa non disponibile</p></div></Show>
       <Show when={notice()}><p class="map-notice" role="status">{notice()}</p></Show>
-      <div class="map-footer"><span class="map-basemap-label"><span class="small-dot" />{offline() ? 'Griglia geografica · senza strade' : (configuredStyle ? 'Mappa di base configurata' : 'CARTO Positron · OpenStreetMap')}</span><Show when={props.selected}><span class="map-legend"><span class="legend-line" />{props.demo ? 'Percorso sintetico' : 'Percorso selezionato'}</span></Show></div>
+      <Show when={offline() || props.demo}><div class="map-footer"><span class="map-basemap-label">{offline() ? 'Griglia geografica · senza strade' : 'Percorso sintetico'}</span></div></Show>
     </section>
   )
 }
