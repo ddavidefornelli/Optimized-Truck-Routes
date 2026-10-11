@@ -74,14 +74,13 @@ export function createPlan(origin: Coordinates, destination: Coordinates): Route
   ] }
 }
 
-const numbers = new Intl.NumberFormat('it-IT', { maximumFractionDigits: 1 })
-
-export function formatDistance(meters: number | null): string {
-  return meters === null ? 'Non disponibile' : `${numbers.format(meters / 1000)} km`
+export function formatDistance(meters: number | null, locale = 'fi-FI', unavailable = 'Ei saatavilla'): string {
+  const numbers = new Intl.NumberFormat(locale, { maximumFractionDigits: 1 })
+  return meters === null ? unavailable : `${numbers.format(meters / 1000)} km`
 }
 
-export function formatDuration(seconds: number | null): string {
-  if (seconds === null) return 'Non disponibile'
+export function formatDuration(seconds: number | null, unavailable = 'Ei saatavilla'): string {
+  if (seconds === null) return unavailable
   const minutes = Math.max(1, Math.round(seconds / 60))
   if (minutes < 60) return `${minutes} min`
   const remainder = minutes % 60

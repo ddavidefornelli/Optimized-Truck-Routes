@@ -3,6 +3,7 @@ import type { GeoJSONSource, Map as MapLibreMap, Marker } from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url'
 import Icon from '../components/Icon'
+import { language, t } from '../lib/i18n'
 import type { Coordinates, RouteOption } from '../features/route-planner/domain'
 import type { StopKey } from '../features/route-planner/createRoutePlanner'
 import { offlineStyle } from './offlineStyle'
@@ -39,6 +40,11 @@ export default function RouteMap(props: Props) {
       lib.setWorkerUrl(workerUrl)
       map = new lib.Map({
         container, style: mapStyleUrl,
+        locale: {
+          'NavigationControl.ZoomIn': t('Zoom in'),
+          'NavigationControl.ZoomOut': t('Zoom out'),
+          'AttributionControl.ToggleAttribution': language() === 'fi' ? 'Näytä kartan lähteet' : 'Toggle attribution',
+        },
         center: [25.25, 60.3], zoom: 8.6, minZoom: 2, maxZoom: 18,
         attributionControl: {
           compact: true,
@@ -64,7 +70,7 @@ export default function RouteMap(props: Props) {
           map.addSource('selected-route', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } })
           map.addLayer({ id: 'alternatives', type: 'line', source: 'routes', layout: { 'line-join': 'round', 'line-cap': 'round' }, paint: { 'line-color': '#9caebc', 'line-width': 4, 'line-dasharray': [2, 2] } })
           map.addLayer({ id: 'route-outline', type: 'line', source: 'selected-route', layout: { 'line-join': 'round', 'line-cap': 'round' }, paint: { 'line-color': '#ffffff', 'line-width': 9 } })
-          map.addLayer({ id: 'route', type: 'line', source: 'selected-route', layout: { 'line-join': 'round', 'line-cap': 'round' }, paint: { 'line-color': '#234f78', 'line-width': 5 } })
+          map.addLayer({ id: 'route', type: 'line', source: 'selected-route', layout: { 'line-join': 'round', 'line-cap': 'round' }, paint: { 'line-color': '#005670', 'line-width': 5 } })
         }
         setReady(true)
       })
@@ -86,7 +92,7 @@ export default function RouteMap(props: Props) {
           const element = document.createElement('div')
           element.className = `map-pin ${key}`
           element.textContent = key === 'origin' ? 'A' : 'B'
-          element.title = key === 'origin' ? 'Partenza' : 'Arrivo'
+          element.title = t(key === 'origin' ? 'Partenza' : 'Arrivo')
           markers.push(new lib.Marker({ element }).setLngLat([point.longitude, point.latitude]).addTo(map))
         }
       }
@@ -115,6 +121,17 @@ export default function RouteMap(props: Props) {
 
   createEffect(() => {
     if (!ready() || !map) return
+    // MapLibre control labels are not reactive; update them when the UI language changes.
+    language()
+    for (const [selector, key] of [['.maplibregl-ctrl-zoom-in', 'Zoom in'], ['.maplibregl-ctrl-zoom-out', 'Zoom out']] as const) {
+      const button = container.querySelector<HTMLButtonElement>(selector)
+      button?.setAttribute('aria-label', t(key))
+      button?.setAttribute('title', t(key))
+    }
+    const attribution = container.querySelector<HTMLButtonElement>('.maplibregl-ctrl-attrib-button')
+    const label = language() === 'fi' ? 'Näytä kartan lähteet' : 'Toggle attribution'
+    attribution?.setAttribute('aria-label', label)
+    attribution?.setAttribute('title', label)
     map.getCanvas().style.cursor = props.picking ? 'crosshair' : ''
   })
 
@@ -136,13 +153,13 @@ export default function RouteMap(props: Props) {
   })
 
   return (
-    <section id="route-map" class="map-panel" aria-label="Mappa del percorso">
+    <section id="route-map" class="map-panel" aria-label={t('Mappa del percorso')}>
       <div ref={container} class="map-canvas" data-ready={ready()} />
-      <Show when={props.picking && !unavailable()}><div class="map-pick-notice" role="status"><Icon name="pin" size={18} />Tocca la mappa per scegliere {props.picking === 'origin' ? 'la partenza' : 'l’arrivo'}.</div></Show>
-      <Show when={props.loading}><div class="map-loading" role="status"><span class="spinner" />Calcolo in corso…</div></Show>
-      <Show when={unavailable()}><div class="map-unavailable" role="status"><Icon name="info" size={20} /><p>Mappa non disponibile</p></div></Show>
-      <Show when={notice()}><p class="map-notice" role="status">{notice()}</p></Show>
-      <Show when={offline() || props.demo}><div class="map-footer"><span class="map-basemap-label">{offline() ? 'Griglia geografica · senza strade' : 'Percorso sintetico'}</span></div></Show>
+      <Show when={props.picking && !unavailable()}><div class="map-pick-notice" role="status"><Icon name="pin" size={18} />{t(props.picking === 'origin' ? 'Tocca la mappa per scegliere la partenza.' : 'Tocca la mappa per scegliere l’arrivo.')}</div></Show>
+      <Show when={props.loading}><div class="map-loading" role="status"><span class="spinner" />{t('Calcolo in corso…')}</div></Show>
+      <Show when={unavailable()}><div class="map-unavailable" role="status"><Icon name="info" size={20} /><p>{t('Mappa non disponibile')}</p></div></Show>
+      <Show when={notice()}><p class="map-notice" role="status">{t(notice())}</p></Show>
+      <Show when={offline() || props.demo}><div class="map-footer"><span class="map-basemap-label">{t(offline() ? 'Griglia geografica · senza strade' : 'Percorso sintetico')}</span></div></Show>
     </section>
   )
 }

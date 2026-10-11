@@ -1,6 +1,8 @@
-# Client — Truck Routes
+# Client — Valio Aimo · Percorsi autisti
 
-Interfaccia minimale in italiano, SolidJS + TypeScript + Vite, con mappa MapLibre caricata separatamente. Palette blu navy, teal e superfici chiare; layout responsive e controlli accessibili.
+Interfaccia minimale per gli autisti Valio Aimo, SolidJS + TypeScript + Vite, con mappa MapLibre caricata separatamente. Identità ripresa dal [sito del cliente](https://www.valioaimo.fi/en/become-a-customer/delivery-wholesale/): petrolio `#005670`, verde lime `#C0E021` per l’azione principale e superfici chiare. Logo ufficiale locale, font di sistema, layout responsive e controlli touch di almeno 44 px.
+
+**Finlandese come lingua predefinita**, inglese selezionabile con **FI / EN**. La preferenza è salvata localmente (`valio-aimo-language`); cambiare lingua non elimina i punti o il percorso. Sono tradotti testi, etichette accessibili, validazione, errori applicativi, demo e indicazioni della mappa; numeri e ricerca indirizzi seguono la lingua selezionata. Eventuali testi liberi del backend sono conservati senza traduzioni inventate.
 
 ## Avvio
 
@@ -10,7 +12,7 @@ cp .env.example .env.local  # facoltativo
 bun run dev
 ```
 
-Il backend non è ancora implementato. **Prova un esempio** mostra un percorso sintetico locale, esplicitamente etichettato e non utilizzabile per la guida. Non sostituisce mai automaticamente una richiesta API fallita. Modificare i punti o uscire dalla demo riattiva la modalità API e invalida il risultato.
+Il backend non è ancora implementato. **Kokeile esimerkkiä / Try an example** mostra un percorso sintetico locale, esplicitamente etichettato e non utilizzabile per la guida. Non sostituisce mai automaticamente una richiesta API fallita. Modificare i punti o uscire dalla demo riattiva la modalità API e invalida il risultato.
 
 Nella modalità reale, cercare un indirizzo e selezionare un suggerimento **Geoapify**, inserire `latitudine, longitudine` con il punto per i decimali, oppure scegliere ciascun punto sulla mappa. La ricerca è limitata alla Finlandia per l'area pilota e richiede `VITE_GEOAPIFY_API_KEY`. Parte dopo 3 caratteri e 300 ms senza modifiche; richieste obsolete vengono annullate e ignorate. Il nome selezionato resta nel campo, ma solo le coordinate vengono inviate al backend. Modificare un indirizzo elimina immediatamente le coordinate associate e il risultato precedente: un testo non selezionato non può essere usato per calcolare. La copertura effettiva del grafo va verificata dal backend.
 
@@ -38,6 +40,7 @@ Vedi [docs/frontend.md](../docs/frontend.md) per il contratto JSON provvisorio e
 
 - `src/features/route-planner/domain.ts`: modello interno, coordinate, metriche, lista ordinata di tappe.
 - `src/features/route-planner/createRoutePlanner.ts`: stato, validazione, cancellazione e protezione da risposte obsolete.
+- `src/lib/i18n.ts`: lingua reattiva FI / EN, preferenza locale e traduzioni dei messaggi applicativi (le stringhe italiane legacy sono solo chiavi di lookup, non una lingua dell’interfaccia).
 - `src/lib/api/http.ts`: trasporto JSON, timeout e messaggi di errore.
 - `src/lib/api/routes-v1.ts`: unico adapter tra dominio e JSON, con validazione runtime.
 - `src/lib/api/geoapify.ts`: adapter di ricerca, valida il JSON Geoapify e restituisce suggerimenti con coordinate del dominio.

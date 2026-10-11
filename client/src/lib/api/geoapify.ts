@@ -5,11 +5,11 @@ interface GeoapifyFeature {
   properties?: { place_id?: unknown; formatted?: unknown; lat?: unknown; lon?: unknown }
 }
 
-export function createGeoapifySearch(apiKey: string, fetcher: typeof fetch = fetch): AddressSearch {
+export function createGeoapifySearch(apiKey: string, fetcher: typeof fetch = fetch, getLanguage: () => 'fi' | 'en' = () => 'fi'): AddressSearch {
   return {
     async search(text, signal) {
       const url = new URL('https://api.geoapify.com/v1/geocode/autocomplete')
-      url.search = new URLSearchParams({ text, apiKey, lang: 'it', limit: '5', filter: 'countrycode:fi' }).toString()
+      url.search = new URLSearchParams({ text, apiKey, lang: getLanguage(), limit: '5', filter: 'countrycode:fi' }).toString()
       const response = await fetcher(url, { signal })
       if (!response.ok) throw new Error('Ricerca non disponibile. Riprova o scegli sulla mappa.')
       const data: unknown = await response.json()

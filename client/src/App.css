@@ -1,25 +1,33 @@
 .app-shell { max-width: 1280px; margin: 0 auto; }
-.app-header { display: flex; align-items: center; height: 60px; padding: 0 16px; }
-.brand { display: inline-flex; align-items: center; gap: 9px; text-decoration: none; font-size: 21px; font-weight: 700; letter-spacing: -1px; color: var(--navy); }
-.brand-mark { display: grid; place-items: center; width: 32px; height: 32px; background: var(--navy); border-radius: 8px; color: white; }
-.brand-light { font-weight: 400; }
-.brand-dot { color: var(--teal); }
+.app-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 72px; padding: 0 16px; }
+.brand { display: inline-flex; align-items: center; min-height: 48px; text-decoration: none; }
+.brand img { display: block; width: 120px; height: 40px; }
+.app-title { color: var(--navy); font-size: 16px; font-weight: 600; margin-right: auto; }
+.language-switch { display: flex; gap: 2px; flex-shrink: 0; }
+.language-switch button { min-width: 44px; min-height: 44px; padding: 8px; border: 1px solid transparent; border-radius: 6px; color: var(--navy); background: transparent; font-size: 14px; font-weight: 600; }
+.language-switch button[aria-pressed='true'] { background: var(--surface); border-color: var(--border); }
+.language-switch button:hover { background: var(--brand-light); }
+@media (max-width: 459px) {
+  .app-header { gap: 8px; flex-wrap: wrap; height: auto; min-height: 72px; padding-block: 8px; }
+  .app-title { order: 3; flex-basis: 100%; font-size: 15px; }
+  .language-switch { margin-left: auto; }
+}
 main { padding: 0 12px; }
 .workspace { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
 .planner-panel { border: 1px solid var(--border); background: var(--surface); border-radius: 12px; padding: 16px; min-width: 0; }
-.field-label { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+.field-label { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; margin-bottom: 8px; }
 .stop-dot { width: 9px; height: 9px; border: 2px solid var(--navy); border-radius: 50%; flex: 0 0 auto; }
 .stop-dot.destination { border-radius: 2px; border-color: var(--teal); background: var(--teal); }
-.coordinate-input { display: flex; align-items: center; border: 1px solid #dfe6eb; border-radius: 8px; background: #fbfcfd; }
-.coordinate-input:focus-within { border-color: #6a9cb9; box-shadow: 0 0 0 3px #e8f0f6; }
-.coordinate-input.picking { border-color: var(--teal); box-shadow: 0 0 0 3px #e8f2ef; }
+.coordinate-input { display: flex; align-items: center; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); }
+.coordinate-input:focus-within { border-color: var(--navy); box-shadow: 0 0 0 3px #d9e6ea; }
+.coordinate-input.picking { border-color: var(--navy); box-shadow: 0 0 0 3px var(--brand-light); }
 .coordinate-input.invalid { border-color: #b55b54; }
-.coordinate-input input { width: 100%; min-width: 0; min-height: 48px; padding: 12px; border: 0; background: transparent; outline: none; color: var(--text); font-size: 16px; font-variant-numeric: tabular-nums; }
+.coordinate-input input { width: 100%; min-width: 0; min-height: 52px; padding: 12px; border: 0; background: transparent; outline: none; color: var(--text); font-size: 16px; font-variant-numeric: tabular-nums; }
 .coordinate-input input::placeholder { color: #758792; }
 .icon-button { display: grid; place-items: center; border: 0; background: none; border-radius: 6px; color: var(--muted); flex-shrink: 0; width: 44px; height: 44px; }
 .icon-button:hover { background: #eaf0f4; color: var(--navy); }
 .pick-button { margin-right: 2px; }
-.pick-button[aria-pressed='true'] { background: #e2efec; color: var(--teal); }
+.pick-button[aria-pressed='true'] { background: var(--brand-light); color: var(--navy); }
 .stop-connector { display: flex; align-items: center; justify-content: space-between; height: 44px; padding-left: 4px; }
 .stop-connector > span { height: 24px; border-left: 1px dashed #bccbd4; }
 .coordinate-hint { font-size: 12px; margin-top: 8px; color: var(--muted); }
@@ -30,8 +38,8 @@ main { padding: 0 12px; }
 .address-results p { padding: 12px; font-size: 13px; color: var(--muted); }
 .address-results a { display: block; padding: 12px; min-height: 44px; font-size: 12px; color: var(--muted); }
 .field-error { color: #9b403b; font-size: 13px; line-height: 1.5; margin-top: 7px; }
-.primary-button { border: 0; width: 100%; min-height: 48px; margin-top: 16px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; color: white; background: var(--navy); border-radius: 8px; font-size: 15px; font-weight: 600; }
-.primary-button:hover:not(:disabled) { background: var(--navy-hover); }
+.primary-button { border: 0; width: 100%; min-height: 56px; margin-top: 16px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; color: var(--text); background: var(--lime); border-radius: 8px; font-size: 16px; font-weight: 700; }
+.primary-button:hover:not(:disabled) { background: var(--lime-hover); }
 .primary-button:disabled { opacity: 0.75; justify-content: center; }
 .text-button { border: 0; background: none; display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 44px; color: var(--navy); font-size: 13px; font-weight: 600; padding: 10px 8px; }
 .text-button:hover { color: var(--teal); }
@@ -47,7 +55,7 @@ main { padding: 0 12px; }
 .route-metrics dd { margin: 6px 0 0; color: var(--navy); font-size: 24px; font-weight: 600; letter-spacing: -0.5px; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
 .route-options { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
 .route-options button { min-height: 44px; font-size: 13px; border: 1px solid var(--border); background: white; padding: 10px; border-radius: 6px; text-align: left; }
-.route-options button[aria-pressed='true'] { background: #eaf1f6; border-color: #afc5d4; color: var(--navy); }
+.route-options button[aria-pressed='true'] { background: var(--brand-light); border-color: var(--navy); color: var(--navy); }
 .route-warnings { margin-top: 16px; font-size: 13px; color: var(--muted); line-height: 1.6; }
 .route-warnings ul { margin: 0; padding-left: 18px; list-style: disc; }
 .no-route { color: var(--muted); font-size: 13px; line-height: 1.6; }
