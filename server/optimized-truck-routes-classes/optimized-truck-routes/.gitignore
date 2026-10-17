@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+
+# Secrets / local settings
+.env
+backend/.env
+*.pem
+*.key
+
+# Heavy source datasets / generated graph artifacts
+/data/
+*.gpkg
+*.shp
+*.shx
+*.dbf
+*.prj
+*.tif
+*.osm.pbf
+*.graphml
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/

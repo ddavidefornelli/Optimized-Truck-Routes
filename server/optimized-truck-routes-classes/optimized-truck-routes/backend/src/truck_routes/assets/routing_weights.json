@@ -1,0 +1,36 @@
+{
+  "model_version": "0.1.0-demo",
+  "reference_speed_m_per_s": 13.89,
+  "snap_max_distance_m": 2500,
+  "narrow_width_margin_m": 1.2,
+  "profiles": {
+    "shortest": {
+      "label": "Più breve ammissibile",
+      "w_time": 0.0,
+      "w_distance": 1.0,
+      "penalty_multiplier": 0.0
+    },
+    "balanced": {
+      "label": "Bilanciato",
+      "w_time": 1.0,
+      "w_distance": 0.3,
+      "penalty_multiplier": 1.0
+    },
+    "road_comfort": {
+      "label": "Comfort stradale",
+      "w_time": 0.65,
+      "w_distance": 0.1,
+      "penalty_multiplier": 2.0
+    }
+  },
+  "penalty_seconds_per_metre": {
+    "surface": 0.08,
+    "width": 0.12,
+    "urban": 0.06,
+    "curve": 0.10,
+    "dark": 0.06,
+    "unknown": 0.04,
+    "documented_hazard": 0.10
+  },
+  "note": "Coefficienti iniziali ipotetici per il prototipo. Devono essere calibrati su dati verificati e non rappresentano soglie certificate di sicurezza."
+}
