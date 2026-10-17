@@ -1,0 +1,11 @@
+{
+  "id": "demo-standard-truck",
+  "version": "0.1.0-demo-unvalidated",
+  "height_m": 4.0,
+  "width_m": 2.55,
+  "length_m": 16.5,
+  "gross_weight_kg": 40000,
+  "axle_loads_kg": null,
+  "validated": false,
+  "notes": "Valori segnaposto solo per la demo sintetica. NON usare per pianificare viaggi reali; sostituire con un profilo approvato e documentato prima di attivare il routing su dati reali."
+}
